@@ -1,1 +1,189 @@
-<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>For Pranty ❤️</title>\n    <style>\n        body {\n            margin: 0;\n            overflow: hidden;\n            background-color: #f0f0f0;\n            color: #333;\n            font-family: Arial, sans-serif;\n        }\n        h1 {\n            text-align: center;\n            margin-top: 20%;\n            font-size: 3em;\n            animation: fadeIn 3s;\n        }\n        @keyframes fadeIn {\n            from { opacity: 0; }\n            to { opacity: 1; }\n        }\n    </style>\n</head>\n<body>\n    <h1>For Pranty ❤️</h1>\n    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>\n    <script>\n        function setup() {\n            createCanvas(windowWidth, windowHeight);\n        }\n        function draw() {\n            background(255, 0, 0, 150); // semi-transparent red\n            fill(255);\n            noStroke();\n            ellipse(random(width), random(height), 50, 50);\n        }\n    </script>\n    <audio controls autoplay loop>\n        <source src="youraudiofile.mp3" type="audio/mpeg">\n        Your browser does not support the audio element.\n    </audio>\n</body>\n</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Pranty ❤️</title>
+
+<style>
+:root{
+    --glow:#ff4d8d;
+}
+
+body{
+    margin:0;
+    background: radial-gradient(circle at 50% 40%, #0a0f2c, #000 70%);
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+    overflow:hidden;
+    color:white;
+}
+
+/* canvas */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:0;
+}
+
+/* glass card */
+.card{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:30px;
+    padding:clamp(25px,5vw,60px);
+    text-align:center;
+    z-index:2;
+    animation: floatIn 2.5s cubic-bezier(.19,1,.22,1) forwards;
+    opacity:0;
+}
+
+/* main title */
+.title{
+    font-size:clamp(38px,7vw,85px);
+    letter-spacing:3px;
+    font-weight:700;
+    background:linear-gradient(90deg,#fff,#ff9ec4,#fff);
+    background-size:200%;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation: shine 6s linear infinite;
+}
+
+/* subtitle */
+.text{
+    margin-top:25px;
+    font-size:clamp(16px,3.5vw,26px);
+    opacity:.9;
+    line-height:1.5em;
+    letter-spacing:1px;
+}
+
+/* glow aura */
+.glow{
+    position:absolute;
+    width:600px;
+    height:600px;
+    background: radial-gradient(circle,var(--glow),transparent 60%);
+    filter: blur(120px);
+    z-index:1;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    animation:pulse 5s ease-in-out infinite;
+}
+
+/* animations */
+@keyframes floatIn{
+    from{transform:translate(-50%,-30%) scale(.8); opacity:0;}
+    to{transform:translate(-50%,-50%) scale(1); opacity:1;}
+}
+
+@keyframes pulse{
+    0%,100%{opacity:.4;}
+    50%{opacity:.8;}
+}
+
+@keyframes shine{
+    to{background-position:200%;}
+}
+
+/* mobile spacing fix */
+@media (max-width:500px){
+    .card{width:85%;}
+}
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="card">
+    <div class="title">I Love You Pranty ❤️</div>
+    <div class="text">
+        You are my calm in chaos,<br>
+        my light in darkness,<br>
+        and the most beautiful chapter<br>
+        of my life ✨
+    </div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<script>
+const canvas=document.getElementById("fx");
+const ctx=canvas.getContext("2d");
+
+function resize(){
+    canvas.width=innerWidth;
+    canvas.height=innerHeight;
+}
+resize();
+addEventListener("resize",resize);
+
+/* particle */
+class P{
+    constructor(x,y){
+        this.x=x;
+        this.y=y;
+        this.a=Math.random()*Math.PI*2;
+        this.s=Math.random()*5+1;
+        this.l=100;
+        this.t=["♥","Love","U","Pranty","I"][Math.floor(Math.random()*5)];
+    }
+    update(){
+        this.x+=Math.cos(this.a)*this.s;
+        this.y+=Math.sin(this.a)*this.s;
+        this.s*=0.97;
+        this.l--;
+    }
+    draw(){
+        ctx.fillStyle=`rgba(255,${150+Math.random()*100},200,${this.l/100})`;
+        ctx.font="bold 16px sans-serif";
+        ctx.fillText(this.t,this.x,this.y);
+    }
+}
+
+let arr=[];
+
+function boom(x,y){
+    let count = innerWidth<600 ? 60 : 100;
+    for(let i=0;i<count;i++) arr.push(new P(x,y));
+}
+
+function animate(){
+    ctx.fillStyle="rgba(0,0,0,0.2)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    for(let i=arr.length-1;i>=0;i--){
+        arr[i].update();
+        arr[i].draw();
+        if(arr[i].l<=0) arr.splice(i,1);
+    }
+    requestAnimationFrame(animate);
+}
+animate();
+
+/* auto fireworks */
+setInterval(()=>{
+    boom(
+        Math.random()*canvas.width,
+        Math.random()*canvas.height*0.7
+    );
+},1400);
+
+/* tap/click fireworks */
+addEventListener("click",e=>boom(e.clientX,e.clientY));
+addEventListener("touchstart",e=>{
+    let t=e.touches[0];
+    boom(t.clientX,t.clientY);
+});
+</script>
+
+</body>
+</html>
