@@ -3,58 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pranty Love</title>
+    <title>Loader & Secret Message</title>
     <style>
         body {
             margin: 0;
-            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
             overflow: hidden;
-            background: #000;
         }
+
         .loader {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border: 16px solid #f3f3f3;
-            border-top: 16px solid #3498db;
+            border: 10px solid rgba(255, 255, 255, 0.3);
+            border-top: 10px solid #ffffff;
             border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
+            width: 100px;
+            height: 100px;
+            animation: spin 1s linear infinite;
         }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .message {
+            display: none;
+            position: absolute;
+            color: #ffffff;
+            font-size: 24px;
+            text-align: center;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff,
+                         0 0 15px #ff00ff, 0 0 20px #ff00ff;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
         .glow {
-            color: #fff;
-            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+            position: relative;
         }
+
+        .fireworks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .petals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            animation: float 5s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
     </style>
 </head>
 <body>
     <div class="loader"></div>
-    <div class="glass-card">
-        <h1 class="glow">Welcome to Pranty Love</h1>
-        <audio controls>
-            <source src="your-music-url.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
+    <div class="message glow">
+        Tumi 10 e 10 💖
     </div>
-    <script>
-        // Fireworks particles
-        // Floating petals
-        // Sparkle trail animations
+    <div class="fireworks"></div>
+    <div class="petals"></div>
 
-        // Add your animations here
+    <script>
+        setTimeout(() => {
+            const loader = document.querySelector(".loader");
+            const message = document.querySelector(".message");
+            loader.style.display = 'none';
+            message.style.display = 'block';
+            message.style.opacity = 1;
+        }, 3000);
     </script>
 </body>
 </html>
