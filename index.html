@@ -3,72 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Webpage</title>
+    <title>Pranty Love</title>
     <style>
-        /* Loading Screen */
-        #loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             background: #000;
-            color: #fff;
-            font-size: 2em;
         }
-        /* Floating Hearts */
-        .heart {
+        .loader {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: red;
-            clip-path: polygon(50% 0%, 100% 70%, 0% 70%);
-            animation: float 5s infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-30px); }
-            100% { transform: translateY(0); }
-        }
-        /* Fireworks Animation */
-        @keyframes fireworks {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
-        .firework {
-            position: absolute;
-            background: yellow;
-            width: 10px;
-            height: 10px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
             border-radius: 50%;
-            animation: fireworks 1s infinite;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .glow {
+            color: #fff;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ff00ff, 0 0 20px #ff00ff;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
 <body>
-    <div id="loading">Loading...</div>
-    <div id="music-embed">
-        <iframe width="560" height="315" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+    <div class="loader"></div>
+    <div class="glass-card">
+        <h1 class="glow">Welcome to Pranty Love</h1>
+        <audio controls>
+            <source src="your-music-url.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
     </div>
     <script>
-        // Hide loading screen after a few seconds
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-        }, 3000);
-        // Create floating hearts
-        const heartContainer = document.body;
-        for (let i = 0; i < 20; i++) {
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.style.left = `${Math.random() * 100}vw`;
-            heart.style.animationDelay = `${Math.random() * 5}s`;
-            heartContainer.appendChild(heart);
-        }
-        // Create fireworks animation
-        const firework = document.createElement('div');
-        firework.className = 'firework';
-        firework.style.left = `${Math.random() * 100}vw`;
-        firework.style.bottom = '10%';
-        document.body.appendChild(firework);
+        // Fireworks particles
+        // Floating petals
+        // Sparkle trail animations
+
+        // Add your animations here
     </script>
 </body>
 </html>
