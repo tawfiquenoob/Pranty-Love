@@ -1,261 +1,288 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>For Pranty ❤️</title>
-
-<style>
-:root{ --glow:#ff4d8d; }
-
-/* BODY CENTER FIX */
-body{
-margin:0;
-background:black;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-overflow:hidden;
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
-}
-
-/* CINEMATIC BACKGROUND */
-.bg{
-position:fixed;
-inset:0;
-background: radial-gradient(circle at 50% 40%, #0a0f2c, #000 70%);
-z-index:-2;
-animation: zoom 20s ease-in-out infinite alternate;
-}
-@keyframes zoom{
-from{transform:scale(1);}
-to{transform:scale(1.06);}
-}
-
-/* vignette */
-body:after{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-background:radial-gradient(circle,transparent 55%, black 100%);
-z-index:-1;
-}
-
-/* loader */
-#loader{
-position:fixed;
-inset:0;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:999;
-font-size:28px;
-letter-spacing:4px;
-animation: fadeOut 2s ease 2.8s forwards;
-}
-@keyframes fadeOut{ to{opacity:0; visibility:hidden;} }
-
-canvas{ position:fixed; top:0; left:0; z-index:0; }
-
-/* glow */
-.glow{
-position:absolute;
-width:750px; height:750px;
-background: radial-gradient(circle,var(--glow),transparent 60%);
-filter: blur(140px);
-z-index:1;
-animation:pulse 6s ease-in-out infinite;
-}
-@keyframes pulse{0%,100%{opacity:.35;}50%{opacity:.9;}}
-
-/* GLASS CARD */
-.card{
-backdrop-filter: blur(28px);
-background: rgba(255,255,255,0.07);
-border:1px solid rgba(255,255,255,0.18);
-border-radius:55px;
-padding:clamp(30px,6vw,70px);
-text-align:center;
-z-index:2;
-opacity:0;
-animation: reveal 3s cubic-bezier(.19,1,.22,1) 3.2s forwards;
-}
-@keyframes reveal{
-from{transform:scale(.8);opacity:0;}
-to{transform:scale(1);opacity:1;}
-}
-
-.title{
-font-size:clamp(42px,7vw,95px);
-font-weight:700;
-letter-spacing:3px;
-background:linear-gradient(90deg,#fff,#ff9ec4,#fff);
-background-size:200%;
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-animation: shine 6s linear infinite;
-}
-@keyframes shine{to{background-position:200%;}}
-
-.name{
-opacity:0;
-animation:nameIn 2s ease 5.8s forwards;
-}
-@keyframes nameIn{to{opacity:1; letter-spacing:5px;}}
-
-.text{
-margin-top:25px;
-font-size:clamp(16px,3.5vw,26px);
-line-height:1.5em;
-opacity:.95;
-}
-
-/* SECRET CENTER MESSAGE */
-#secret{
-position:fixed;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:clamp(40px,8vw,90px);
-font-weight:bold;
-background:linear-gradient(90deg,#fff,#ff9ec4,#fff);
-background-size:200%;
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-opacity:0;
-pointer-events:none;
-z-index:10;
-text-align:center;
-}
-
-.showSecret{
-animation: secretAnim 2.5s cubic-bezier(.19,1,.22,1);
-}
-@keyframes secretAnim{
-0%{opacity:0; transform:scale(.5);}
-30%{opacity:1;}
-70%{opacity:1;}
-100%{opacity:0; transform:scale(1.2);}
-}
-</style>
-</head>
-<body>
-
-<div class="bg"></div>
-<div id="loader">Creating a moment…</div>
-<div id="secret">Tumi 10 e 10 💖</div>
-<div class="glow"></div>
-
-<div class="card">
-<div class="title">I Love You <span class="name">Pranty ❤️</span></div>
-<div class="text">
-You are my calm in chaos,<br>
-my light in darkness,<br>
-my favorite thought,<br>
-and my forever home ✨
-</div>
-</div>
-
-<canvas id="fx"></canvas>
 
 <script>
-const canvas=document.getElementById("fx");
-const ctx=canvas.getContext("2d");
+/* ===========================
+   CANVAS SETUP
+=========================== */
 
-function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
-resize(); addEventListener("resize",resize);
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
 
-/* fireworks */
-class P{
-constructor(x,y){
-this.x=x; this.y=y;
-this.a=Math.random()*Math.PI*2;
-this.s=Math.random()*5+1;
-this.l=100;
-this.t=["♥","Love","U","Pranty","I"][Math.floor(Math.random()*5)];
+const canvasTop = document.getElementById("fxTop");
+const ctxTop = canvasTop.getContext("2d");
+
+function resize(){
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+canvasTop.width = innerWidth;
+canvasTop.height = innerHeight;
 }
-update(){ this.x+=Math.cos(this.a)*this.s; this.y+=Math.sin(this.a)*this.s; this.s*=0.97; this.l--; }
+resize();
+addEventListener("resize", resize);
+
+/* ===========================
+   AUDIO SETUP
+=========================== */
+
+const boomSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-firework-explosion-1689.mp3");
+boomSound.volume = 0.6;
+
+/* ===========================
+   PARTICLES
+=========================== */
+
+class Particle{
+constructor(x,y,textMode=false){
+this.x=x;
+this.y=y;
+this.angle=Math.random()*Math.PI*2;
+this.speed=Math.random()*5+2;
+this.life=100;
+this.textMode=textMode;
+this.trail=[];
+this.char=["♥","Love","U","I"][Math.floor(Math.random()*4)];
+}
+update(){
+this.trail.push({x:this.x,y:this.y});
+if(this.trail.length>6) this.trail.shift();
+this.x+=Math.cos(this.angle)*this.speed;
+this.y+=Math.sin(this.angle)*this.speed;
+this.speed*=0.96;
+this.life--;
+}
 draw(){
-ctx.fillStyle=`rgba(255,${150+Math.random()*100},200,${this.l/100})`;
+for(let t of this.trail){
+ctx.fillStyle="rgba(255,150,200,0.2)";
+ctx.fillRect(t.x,t.y,2,2);
+}
+ctx.fillStyle=`rgba(255,150,200,${this.life/100})`;
 ctx.font="bold 16px sans-serif";
-ctx.fillText(this.t,this.x,this.y);
+ctx.fillText(this.char,this.x,this.y);
 }
 }
 
-/* petals */
-class Petal{
-constructor(){
-this.x=Math.random()*canvas.width;
-this.y=-20;
-this.s=Math.random()*1.2+.3;
-this.v=Math.random()*1+.3;
-this.w=Math.random()*2-1;
+class FastParticle{
+constructor(x,y){
+this.x=x;
+this.y=y;
+this.angle=Math.random()*Math.PI*2;
+this.speed=Math.random()*14+8;
+this.life=80;
 }
-update(){ this.y+=this.v; this.x+=Math.sin(this.y/40)*this.w; }
+update(){
+this.x+=Math.cos(this.angle)*this.speed;
+this.y+=Math.sin(this.angle)*this.speed;
+this.speed*=0.98;
+this.life--;
+}
 draw(){
-ctx.fillStyle="rgba(255,170,200,.85)";
-ctx.beginPath();
-ctx.ellipse(this.x,this.y,8*this.s,5*this.s,Math.PI/4,0,Math.PI*2);
-ctx.fill();
+ctxTop.fillStyle=`rgba(255,220,0,${this.life/80})`;
+ctxTop.beginPath();
+ctxTop.arc(this.x,this.y,3,0,Math.PI*2);
+ctxTop.fill();
 }
 }
 
-let arr=[]; let petals=[];
+class Shockwave{
+constructor(x,y){
+this.x=x;
+this.y=y;
+this.radius=10;
+this.life=30;
+}
+update(){ this.radius+=15; this.life--; }
+draw(){
+ctxTop.strokeStyle=`rgba(255,255,255,${this.life/30})`;
+ctxTop.lineWidth=4;
+ctxTop.beginPath();
+ctxTop.arc(this.x,this.y,this.radius,0,Math.PI*2);
+ctxTop.stroke();
+}
+}
+
+class GoldRain{
+constructor(){
+this.x=Math.random()*canvasTop.width;
+this.y=-20;
+this.speed=Math.random()*4+3;
+this.life=200;
+}
+update(){ this.y+=this.speed; this.life--; }
+draw(){
+ctxTop.fillStyle="gold";
+ctxTop.fillRect(this.x,this.y,2,8);
+}
+}
+
+/* ===========================
+   ARRAYS
+=========================== */
+
+let normalParticles=[];
+let fastParticles=[];
+let shockwaves=[];
+let goldRain=[];
+
+/* ===========================
+   FUNCTIONS
+=========================== */
 
 function boom(x,y){
-let count=innerWidth<600?60:110;
-for(let i=0;i<count;i++) arr.push(new P(x,y));
+for(let i=0;i<120;i++){
+normalParticles.push(new Particle(x,y));
+}
 }
 
-setInterval(()=>petals.push(new Petal()),300);
-setInterval(()=>boom(Math.random()*canvas.width,Math.random()*canvas.height*0.6),1800);
+function megaBoom(x,y){
+
+// fast yellow layer
+for(let i=0;i<350;i++){
+fastParticles.push(new FastParticle(x,y));
+}
+
+// shockwave
+shockwaves.push(new Shockwave(x,y));
+
+// golden rain
+for(let i=0;i<80;i++){
+goldRain.push(new GoldRain());
+}
+
+// vibration
+if(navigator.vibrate){
+navigator.vibrate([120,60,200]);
+}
+
+// sound
+boomSound.currentTime=0;
+boomSound.play();
+
+// screen flash
+flashScreen();
+}
+
+/* FLASH */
+function flashScreen(){
+const flash=document.createElement("div");
+flash.style.position="fixed";
+flash.style.inset="0";
+flash.style.background="white";
+flash.style.opacity="0.7";
+flash.style.zIndex="100";
+document.body.appendChild(flash);
+setTimeout(()=>flash.remove(),100);
+}
+
+/* I LOVE YOU FORMATION */
+function textFormation(){
+const text="I LOVE YOU";
+const spacing=40;
+let startX=canvas.width/2 - (text.length*spacing)/2;
+let y=canvas.height/3;
+
+for(let i=0;i<text.length;i++){
+let char=text[i];
+if(char!==" "){
+for(let j=0;j<15;j++){
+let p=new Particle(startX+i*spacing,y,true);
+normalParticles.push(p);
+}
+}
+}
+}
+
+/* CONTINUOUS EXPLOSION */
+setInterval(()=>{
+boom(
+Math.random()*canvas.width,
+Math.random()*canvas.height*0.6
+);
+},1800);
+
+/* TEXT FORMATION EVERY 8s */
+setInterval(()=>{
+textFormation();
+},8000);
+
+/* ===========================
+   ANIMATION LOOP
+=========================== */
 
 function animate(){
 ctx.fillStyle="rgba(0,0,0,0.2)";
 ctx.fillRect(0,0,canvas.width,canvas.height);
 
-for(let i=arr.length-1;i>=0;i--){
-arr[i].update(); arr[i].draw();
-if(arr[i].l<=0) arr.splice(i,1);
+ctxTop.clearRect(0,0,canvasTop.width,canvasTop.height);
+
+for(let i=normalParticles.length-1;i>=0;i--){
+normalParticles[i].update();
+normalParticles[i].draw();
+if(normalParticles[i].life<=0)
+normalParticles.splice(i,1);
 }
 
-for(let i=petals.length-1;i>=0;i--){
-petals[i].update(); petals[i].draw();
-if(petals[i].y>canvas.height+20) petals.splice(i,1);
+for(let i=fastParticles.length-1;i>=0;i--){
+fastParticles[i].update();
+fastParticles[i].draw();
+if(fastParticles[i].life<=0)
+fastParticles.splice(i,1);
+}
+
+for(let i=shockwaves.length-1;i>=0;i--){
+shockwaves[i].update();
+shockwaves[i].draw();
+if(shockwaves[i].life<=0)
+shockwaves.splice(i,1);
+}
+
+for(let i=goldRain.length-1;i>=0;i--){
+goldRain[i].update();
+goldRain[i].draw();
+if(goldRain[i].life<=0)
+goldRain.splice(i,1);
 }
 
 requestAnimationFrame(animate);
 }
 animate();
 
-/* SECRET TRIGGER */
-let taps=0;
-function triggerSecret(){
-taps++;
-if(taps>=5){
-let s=document.getElementById("secret");
-s.classList.remove("showSecret");
-void s.offsetWidth;
-s.classList.add("showSecret");
-taps=0;
+/* ===========================
+   LONG PRESS
+=========================== */
+
+let pressTimer;
+let isLong=false;
+
+function startPress(e){
+isLong=false;
+pressTimer=setTimeout(()=>{
+isLong=true;
+let x=e.clientX || e.touches[0].clientX;
+let y=e.clientY || e.touches[0].clientY;
+megaBoom(x,y);
+},600);
+}
+
+function endPress(e){
+clearTimeout(pressTimer);
+if(!isLong){
+let x=e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+let y=e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+if(x && y) boom(x,y);
 }
 }
 
-/* interaction */
-addEventListener("click",e=>{
-boom(e.clientX,e.clientY);
-triggerSecret();
-});
-addEventListener("touchstart",e=>{
-let t=e.touches[0];
-boom(t.clientX,t.clientY);
-triggerSecret();
-});
+addEventListener("mousedown",startPress);
+addEventListener("mouseup",endPress);
+addEventListener("touchstart",startPress);
+addEventListener("touchend",endPress);
 </script>
-</body>
-</html>
+
+
+
+
+
+
+
+
+
+
